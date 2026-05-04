@@ -1,0 +1,256 @@
+<ion-content [fullscreen]="true">
+
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>  <ion-header>
+    <ion-toolbar>
+      <ion-segment [(ngModel)]="segmentValue">
+        <ion-segment-button value="profil">
+          <ion-label>Profil</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="film">
+          <ion-label>Film</ion-label>
+        </ion-segment-button>
+        <ion-segment-button value="watchlist">
+          <ion-label>Watchlist</ion-label>
+        </ion-segment-button>
+      </ion-segment>
+
+      <ion-buttons slot="end">
+        <ion-button id="click-trigger" fill="clear" color="light">
+          <ion-icon name="ellipsis-vertical"></ion-icon>
+        </ion-button>
+      </ion-buttons>
+
+      <ion-popover trigger="click-trigger" triggerAction="click" mode="ios">
+        <ng-template>
+          <ion-content>
+            <ion-list>
+              <ion-item button [detail]="false" (click)="openEditProfile()">
+                <ion-icon slot="start" name="create-outline"></ion-icon>
+                <ion-label>Edit Profil</ion-label>
+              </ion-item>
+              <ion-item button [detail]="false" (click)="openAboutModal()">
+                <ion-icon slot="start" name="information-circle-outline"></ion-icon>
+                <ion-label>Tentang Aplikasi</ion-label>
+              </ion-item>
+            </ion-list>
+          </ion-content>
+        </ng-template>
+      </ion-popover>
+    </ion-toolbar>
+  </ion-header>
+
+  <div *ngIf="segmentValue === 'profil'" class="profile-container">
+    <div class="profile-header">
+      <ion-avatar class="profile-avatar">
+        <img alt="User Avatar" [src]="userProfilePic" />
+      </ion-avatar>
+      <h2>{{ userName }}</h2>
+      <p class="profile-bio">{{ userBio }}</p>
+    </div>
+
+    <div class="stats-container">
+      <div class="stat-box">
+        <h3>{{ watchedMovies.length }}</h3>
+        <p>Watched</p>
+      </div>
+      <div class="stat-box">
+        <h3>{{ watchlistMovies.length }}</h3>
+        <p>Watchlist</p>
+      </div>
+      <div class="stat-box">
+        <h3>{{ reviews.length }}</h3>
+        <p>Reviews</p>
+      </div>
+    </div>
+
+    <div class="favorite-section" *ngIf="favoriteMovies.length > 0">
+      <h3>Film Favorit</h3>
+      <div class="horizontal-scroll">
+        <ion-card *ngFor="let movie of favoriteMovies" button="true" [routerLink]="['/detail-film', movie.id]" [queryParams]="{ type: movie.name && !movie.title ? 'tv' : 'movie' }" class="fav-card">
+          <img [alt]="movie.title || movie.name" [src]="getImage(movie.poster_path)" />
+        </ion-card>
+      </div>
+    </div>
+
+    <div class="reviews-section">
+      <h3>Review History</h3>
+      <ion-list *ngIf="displayedReviews.length > 0; else noReviews" class="review-list">
+        <ion-item *ngFor="let item of displayedReviews" button [routerLink]="['/detail-film', item.movieId]" [queryParams]="{ type: item.type || 'movie' }" class="review-item">
+          <ion-thumbnail slot="start">
+            <img [alt]="item.title" [src]="getImage(item.poster_path)" />
+          </ion-thumbnail>
+          <ion-label>
+            <h2 class="review-title">{{ item.title }}</h2>
+            <p class="review-text">{{ item.review }}</p>
+            <p class="review-date" *ngIf="item.date">{{ item.date | date:'dd MMM yyyy' }}</p>
+          </ion-label>
+          <ion-button slot="end" fill="clear" color="danger" (click)="deleteReview($event, item)">
+            <ion-icon name="trash" slot="icon-only"></ion-icon>
+          </ion-button>
+        </ion-item>
+      </ion-list>
+
+      <div class="see-all-container" *ngIf="reviews.length > 4">
+        <ion-button fill="clear" (click)="isReviewHistoryModalOpen = true">Lihat Semua History</ion-button>
+      </div>
+
+      <ng-template #noReviews>
+        <p class="empty-state">Belum ada review yang ditulis.</p>
+      </ng-template>
+    </div>
+  </div>
+
+  <!-- Edit Profile Modal -->
+  <ion-modal [isOpen]="isEditProfileModalOpen" (didDismiss)="isEditProfileModalOpen = false" [initialBreakpoint]="1" [breakpoints]="[0, 1]">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Edit Profil</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="isEditProfileModalOpen = false">Batal</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <ion-list>
+          <ion-item lines="none" class="avatar-edit-item">
+            <ion-avatar slot="start" class="edit-profile-pic">
+              <img [src]="editProfilePic">
+            </ion-avatar>
+            <div class="file-upload-container">
+              <ion-button size="small" fill="outline" color="primary" class="upload-btn">
+                Ganti Foto
+                <input type="file" accept="image/*" (change)="onFileSelected($event)">
+              </ion-button>
+              <p class="upload-note">Max 5MB disarankan</p>
+            </div>
+          </ion-item>
+          <ion-item>
+            <ion-input label="Nama" labelPlacement="floating" type="text" [(ngModel)]="editName" placeholder="Masukkan nama Anda"></ion-input>
+          </ion-item>
+          <ion-item>
+            <ion-textarea label="Bio" labelPlacement="floating" [(ngModel)]="editBio" placeholder="Ceritakan sedikit tentang Anda"></ion-textarea>
+          </ion-item>
+        </ion-list>
+        <div class="ion-margin-top">
+          <ion-button expand="block" (click)="saveProfile()">Simpan</ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <ion-grid *ngIf="segmentValue === 'film'">
+    <ion-row>
+      <ion-col size="3" size-md="3" size-lg="2" *ngFor="let movie of watchedMovies">
+        <ion-card class="ukuran-card" button="true" [routerLink]="['/detail-film', movie.id]" [queryParams]="{ type: movie.name && !movie.title ? 'tv' : 'movie' }">
+          <img class="ukuran-gambar" [alt]="movie.title" [src]="getImage(movie.poster_path)" />
+        </ion-card>
+      </ion-col>
+      <p style="text-align: center; width: 100%; margin-top: 20px; color: gray;" *ngIf="watchedMovies.length === 0">
+        Belum ada film yang kamu tonton.
+      </p>
+    </ion-row>
+  </ion-grid>
+
+  <ion-grid *ngIf="segmentValue === 'watchlist'">
+    <ion-row>
+      <ion-col size="3" size-md="3" size-lg="2" *ngFor="let movie of watchlistMovies">
+        <ion-card class="ukuran-card" button="true" [routerLink]="['/detail-film', movie.id]" [queryParams]="{ type: movie.name && !movie.title ? 'tv' : 'movie' }">
+          <img class="ukuran-gambar" [alt]="movie.title" [src]="getImage(movie.poster_path)" />
+        </ion-card>
+      </ion-col>
+      <p style="text-align: center; width: 100%; margin-top: 20px; color: gray;" *ngIf="watchlistMovies.length === 0">
+        Watchlist masih kosong.
+      </p>
+    </ion-row>
+  </ion-grid>
+
+  <!-- Full Review History Modal -->
+  <ion-modal [isOpen]="isReviewHistoryModalOpen" (didDismiss)="isReviewHistoryModalOpen = false">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-title>Semua Ulasan</ion-title>
+          <ion-buttons slot="end">
+            <ion-button (click)="isReviewHistoryModalOpen = false">Tutup</ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        <div class="reviews-section">
+          <ion-list class="review-list">
+            <ion-item *ngFor="let item of reviews" button [routerLink]="['/detail-film', item.movieId]" [queryParams]="{ type: item.type || 'movie' }" class="review-item">
+              <ion-thumbnail slot="start">
+                <img [alt]="item.title" [src]="getImage(item.poster_path)" />
+              </ion-thumbnail>
+              <ion-label>
+                <h2 class="review-title">{{ item.title }}</h2>
+                <p class="review-text">{{ item.review }}</p>
+                <p class="review-date" *ngIf="item.date">{{ item.date | date:'dd MMM yyyy' }}</p>
+              </ion-label>
+              <ion-button slot="end" fill="clear" color="danger" (click)="deleteReview($event, item)">
+                <ion-icon name="trash" slot="icon-only"></ion-icon>
+              </ion-button>
+            </ion-item>
+          </ion-list>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  <!-- About Modal -->
+  <ion-modal [isOpen]="isAboutModalOpen" (didDismiss)="isAboutModalOpen = false">
+    <ng-template>
+      <ion-content class="ion-padding">
+        
+        <div class="about-container">
+
+            <ion-toolbar>
+              <ion-title class="ion-text-center">Tentang Aplikasi</ion-title>
+            </ion-toolbar>
+
+            <ion-avatar class="app-logo">
+              <img src="assets/icons/icon-512.webp" alt="App Logo">
+            </ion-avatar>
+
+          <h1 class="app-name">MyMovie</h1>
+          <p class="app-version">Versi 1.0.1</p>
+          
+          <ion-card class="info-card">
+            <ion-card-content>
+              <p class="app-description">
+                Aplikasi pendamping untuk menelusuri film favorit, mengelola watchlist, dan menyimpan jurnal sinema Anda.
+              </p>
+              
+              <div class="info-grid">
+                <div class="info-item">
+                  <ion-icon name="film-outline"></ion-icon>
+                  <span>Film Favorit</span>
+                </div>
+                <div class="info-item">
+                  <ion-icon name="eye-outline"></ion-icon>
+                  <span>Watched List</span>
+                </div>
+                <div class="info-item">
+                  <ion-icon name="list-outline"></ion-icon>
+                  <span>Watchlist</span>
+                </div>
+                <div class="info-item">
+                  <ion-icon name="create-outline"></ion-icon>
+                  <span>Review</span>
+                </div>
+              </div>
+            </ion-card-content>
+          </ion-card>
+          
+          <ion-button expand="block" color="light" (click)="isAboutModalOpen = false" class="close-btn">
+            Tutup
+          </ion-button>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>

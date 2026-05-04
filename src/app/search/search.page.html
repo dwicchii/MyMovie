@@ -1,0 +1,45 @@
+<ion-content [fullscreen]="true">
+
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <div class="atas">
+    <ion-searchbar animated="true" mode="ios" placeholder="Cari Film" (ionInput)="onSearch($event)" showCancelButton="always"
+      cancelButtonText="Batal">
+    </ion-searchbar>
+  </div>
+
+  <ion-list *ngIf="isSearching">
+    <ion-item *ngFor="let movie of searchResults" (click)="goToDetail(movie.id, movie.media_type || 'movie')">
+      <ion-thumbnail slot="start">
+        <img [src]="getImage(movie.poster_path)" />
+      </ion-thumbnail>
+
+      <ion-label>
+        <h2>{{ movie.title || movie.name }}</h2>
+        <p>{{ (movie.release_date || movie.first_air_date) | date:'yyyy' }}</p>
+      </ion-label>
+
+    </ion-item>
+  </ion-list>
+
+  <div *ngIf="!isSearching" class="recommendations-container ion-padding-horizontal">
+    <h3 style="margin-top: 10px; font-weight: bold; font-size: 1.2rem;">Rekomendasi Untukmu</h3>
+    
+    <ion-list>
+      <ion-item *ngFor="let movie of recommendedMovies" (click)="goToDetail(movie.id, movie.title ? 'movie' : 'tv')">
+        <ion-thumbnail slot="start">
+          <img [src]="getImage(movie.poster_path)" />
+        </ion-thumbnail>
+  
+        <ion-label>
+          <h2>{{ movie.title || movie.name }}</h2>
+          <p>{{ (movie.release_date || movie.first_air_date) | date:'yyyy' }}</p>
+        </ion-label>
+  
+      </ion-item>
+    </ion-list>
+  </div>
+
+</ion-content>

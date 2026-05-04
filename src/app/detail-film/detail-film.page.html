@@ -1,0 +1,147 @@
+<ion-header [translucent]="true">
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-button (click)="goBack()">
+        <ion-icon name="arrow-back"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <ion-title>Detail Film</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+
+  <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+    <ion-refresher-content></ion-refresher-content>
+  </ion-refresher>
+
+  <!-- BACKDROP -->
+  <div class="backdrop">
+    <img [src]="getImage(movie?.backdrop_path || series?.backdrop_path || anime?.backdrop_path)" />
+  </div>
+
+  <!-- CARD UTAMA -->
+  <div class="container" *ngIf="movie || series || anime">
+
+    <div class="top-section">
+
+      <!-- POSTER -->
+      <img class="poster" [src]="getImage(movie?.poster_path || series?.poster_path || anime?.poster_path)" />
+
+      <!-- INFO -->
+      <div class="info">
+        <h2 class="title">
+          {{ getTitle(movie || series || anime) }}
+        </h2>
+
+        <div class="meta">
+          {{ movie?.release_date || series?.first_air_date || anime?.first_air_date | date:'yyyy' }} •
+          {{ formatRuntime(movie?.runtime || series?.runtime || anime?.runtime || series?.episode_run_time?.[0] || anime?.episode_run_time?.[0]) }}
+        </div>
+
+        <!-- RATING -->
+        <div class="rating">
+          <ion-icon name="star"></ion-icon>
+
+          <span class="score">
+            {{ movie?.vote_average || series?.vote_average || anime?.vote_average | number:'1.1-1' }}
+            <span class="out-of">/10</span>
+          </span>
+        </div>
+
+        <!-- GENRE -->
+        <div class="genres">
+          <ion-chip *ngFor="let genre of (movie?.genres || series?.genres || anime?.genres)">
+            <ion-label>{{ genre?.name }}</ion-label>
+          </ion-chip>
+        </div>
+      </div>
+    </div>
+
+    <!-- OVERVIEW -->
+    <div class="overview">
+      <h2>Overview</h2>
+      <p>{{ movie?.overview || series?.overview || anime?.overview }}</p>
+    </div>
+
+    <!-- SUTRADARA -->
+    <ion-item>
+      <ion-label>Sutradara : {{ director || series?.created_by?.[0]?.name || anime?.created_by?.[0]?.name || 'N/A' }}</ion-label>
+    </ion-item>
+
+    <!-- PEMERAN -->
+    <ion-item>
+      <ion-label>Pemeran : {{ cast || 'N/A' }}</ion-label>
+    </ion-item>
+
+    <!-- INFO TAMBAHAN -->
+    <ion-list>
+      <ion-item>
+        <ion-label>Status : {{ movie?.status || series?.status || anime?.status }}</ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Bahasa : {{ movie?.original_language || series?.original_language || anime?.original_language }}</ion-label>
+      </ion-item>
+
+      <ion-item>
+        <ion-label>Popularity : {{ movie?.popularity || series?.popularity || anime?.popularity }}</ion-label>
+      </ion-item>
+    </ion-list>
+  </div>
+
+  <!-- Rating -->
+  <ion-fab vertical="bottom" horizontal="end" slot="fixed">
+    <ion-fab-button (click)="isRatingModalOpen = true">
+      <ion-icon name="add"></ion-icon>
+    </ion-fab-button>
+  </ion-fab>
+
+  <ion-modal [isOpen]="isRatingModalOpen" (didDismiss)="isRatingModalOpen = false" [initialBreakpoint]="0.50" [breakpoints]="[0, 0.25, 0.5, 0.75, 1]"
+    (ionDragMove)="onDragMove($event)" (ionDragEnd)="onDragEnd($event)">
+    <ng-template>
+      <ion-content class="ion-padding">
+        <div class="ion-margin-top">
+          <h2>{{ movie?.title || series?.title || series?.name || anime?.title || anime?.name }} ({{ movie?.release_date || series?.first_air_date || anime?.first_air_date | date:'yyyy' }})</h2>
+          <div class="user-actions">
+
+            <div class="actions">
+              <div (click)="toggleWatch()">
+                <ion-icon [name]="isWatched() ? 'eye' : 'eye-outline'" [class.active]="isWatched()"></ion-icon>
+                <p>Watch</p>
+              </div>
+              <div (click)="toggleLike()">
+                <ion-icon [name]="isLiked() ? 'heart' : 'heart-outline'" [class.active]="isLiked()"></ion-icon>
+                <p>Like</p>
+              </div>
+              <div (click)="toggleWatchlist()">
+                <ion-icon [name]="isWatchlist() ? 'checkmark' : 'add'" [class.active]="isWatchlist()"></ion-icon>
+                <p>Watchlist</p>
+              </div>
+            </div>
+
+            <div class="rate-section">
+              <p>Rate {{ userRating }} / 10</p>
+
+              <div class="stars">
+                <ion-icon *ngFor="let star of [1,2,3,4,5,6,7,8,9,10]; let i = index"
+                  [name]="i < userRating ? 'star' : 'star-outline'" (click)="rateMovie(i + 1)">
+                </ion-icon>
+              </div>
+            </div>
+
+            <div class="rating-info">
+              <ion-input label="Ulasan" labelPlacement="floating" type="text" fill="outline" placeholder="Masukkan Ulasan..." [(ngModel)]="review"></ion-input>
+            </div>
+
+            <div class="tombol-rating">
+              <ion-button (click)="saveRating()">Simpan Rating</ion-button>
+              <ion-button (click)="deleteRating()">Hapus Rating</ion-button>
+            </div>
+          </div>
+        </div>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+</ion-content>

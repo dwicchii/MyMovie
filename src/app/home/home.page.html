@@ -1,0 +1,87 @@
+<ion-content [fullscreen]="true">
+
+    <!-- Custom Header: bisa kamu ubah/desain sesuka hati -->
+    <div class="header">
+        <h2 class="app-title">MyMovie</h2>
+    </div>
+
+    <ion-refresher slot="fixed" (ionRefresh)="handleRefresh($event)">
+        <ion-refresher-content></ion-refresher-content>
+    </ion-refresher>
+
+    <div *ngIf="heroMovies.length > 0">
+        <swiper-container 
+            slides-per-view="1"
+            rewind="true"
+            autoplay="true"
+            autoplay-delay="2500"
+            autoplay-disable-on-interaction="false"
+            class="hero-swiper">
+            <swiper-slide *ngFor="let movie of heroMovies">
+                <div class="hero">
+                    <img class="bg" [src]="getImage(movie.backdrop_path)" />
+                    <div class="overlay"></div>
+                    <div class="content">
+                        <span class="tag">{{ movie.media_type | uppercase }}</span>
+                        <h1>{{ movie.name || movie.title }}</h1>
+                        <p class="info">
+                            ⭐ {{ movie.vote_average | number:'1.1-1' }} • {{ movie.first_air_date || movie.release_date | date:'yyyy' }}
+                        </p>
+
+                        <ion-button color="light" size="small" shape="round"
+                            [routerLink]="['/detail-film', movie.id]" [queryParams]="{ type: movie.media_type || 'movie' }">
+                            Lihat Detail
+                        </ion-button>
+                    </div>
+                </div>
+            </swiper-slide>
+        </swiper-container>
+    </div>
+
+    <ion-item button (click)="goToTrending()">
+        <ion-title style="text-align: center;">Trending</ion-title>
+    </ion-item>
+
+    <!-- Gambar film yang akan diklik -->
+    <ion-grid>
+        <span style="padding-left: 10px;" *ngIf="trendingMovies.length === 0">Loading...</span>
+        <ion-row>
+            <ion-col size="3" size-md="3" size-lg="2" *ngFor="let m of trendingMovies.slice(0,4)">
+                <ion-card class="ukuran-card" button="true" [routerLink]="['/detail-film', m.id]" [queryParams]="{ type: 'movie' }">
+                    <img class="ukuran-gambar" [alt]="m.title" [src]="getImage(m.poster_path)" />
+                </ion-card>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <ion-item button (click)="goToSeries()">
+        <ion-title style="text-align: center;">Series Populer</ion-title>
+    </ion-item>
+
+    <ion-grid>
+        <span style="padding-left: 10px;" *ngIf="seriesMovies.length === 0">Loading...</span>
+        <ion-row>
+            <ion-col size="3" size-md="3" size-lg="2" *ngFor="let movie of seriesMovies.slice(0,4)">
+                <ion-card class="ukuran-card" button="true" [routerLink]="['/detail-film', movie.id]" [queryParams]="{ type: 'tv' }">
+                    <img class="ukuran-gambar" [alt]="movie.title" [src]="getImage(movie.poster_path)" />
+                </ion-card>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+    <ion-item button (click)="goToAnime()">
+        <ion-title style="text-align: center;">Anime</ion-title>
+    </ion-item>
+
+    <ion-grid>
+        <span style="padding-left: 10px;" *ngIf="animeMovies.length === 0">Loading...</span>
+        <ion-row>
+            <ion-col size="3" size-md="3" size-lg="2" *ngFor="let movie of animeMovies.slice(0,4)">
+                <ion-card class="ukuran-card" button="true" [routerLink]="['/detail-film', movie.id]" [queryParams]="{ type: 'movie' }">
+                    <img class="ukuran-gambar" [alt]="movie.title" [src]="getImage(movie.poster_path)" />
+                </ion-card>
+            </ion-col>
+        </ion-row>
+    </ion-grid>
+
+</ion-content>

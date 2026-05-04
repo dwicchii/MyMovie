@@ -1,0 +1,176 @@
+/*
+ * App Global CSS
+ * ----------------------------------------------------------------------------
+ * Put style rules here that you want to apply globally. These styles are for
+ * the entire app and not just one component. Additionally, this file can be
+ * used as an entry point to import other CSS/Sass files to be included in the
+ * output CSS.
+ * For more information on global stylesheets, visit the documentation:
+ * https://ionicframework.com/docs/layout/global-stylesheets
+ */
+
+/* Google Fonts - Inter */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
+
+/* Core CSS required for Ionic components to work properly */
+@import "@ionic/angular/css/core.css";
+
+/* Basic CSS for apps built with Ionic */
+@import "@ionic/angular/css/normalize.css";
+@import "@ionic/angular/css/structure.css";
+@import "@ionic/angular/css/typography.css";
+@import "@ionic/angular/css/display.css";
+
+/* Optional CSS utils that can be commented out */
+@import "@ionic/angular/css/padding.css";
+@import "@ionic/angular/css/float-elements.css";
+@import "@ionic/angular/css/text-alignment.css";
+@import "@ionic/angular/css/text-transformation.css";
+@import "@ionic/angular/css/flex-utils.css";
+
+/**
+ * MyMovie Dark Theme Variables
+ */
+:root {
+  --bg-primary: #0D0D14;
+  --bg-surface: #161622;
+  --bg-card: #1E1E2E;
+  --accent-gold: #E8B84B;
+  --accent-purple: #7C6AF7;
+  --text-primary: #F0F0F5;
+  --text-secondary: #9090A8;
+  --border-color: #2a2a3e;
+
+  /* Override Ionic color variables for dark theme */
+  --ion-background-color: var(--bg-primary);
+  --ion-background-color-rgb: 13, 13, 20;
+
+  --ion-text-color: var(--text-primary);
+  --ion-text-color-rgb: 240, 240, 245;
+
+  --ion-color-primary: var(--accent-purple);
+  --ion-color-primary-rgb: 124, 106, 247;
+  --ion-color-primary-contrast: #ffffff;
+  --ion-color-primary-contrast-rgb: 255, 255, 255;
+  --ion-color-primary-shade: #6d5dda;
+  --ion-color-primary-tint: #8c7cf8;
+
+  --ion-color-secondary: var(--accent-gold);
+  --ion-color-secondary-rgb: 232, 184, 75;
+  --ion-color-secondary-contrast: #000000;
+  --ion-color-secondary-shade: #cc9f42;
+  --ion-color-secondary-tint: #eabf5d;
+
+  --ion-item-background: var(--bg-card);
+  --ion-card-background: var(--bg-card);
+  --ion-toolbar-background: var(--bg-surface);
+  --ion-tab-bar-background: var(--bg-surface);
+  --ion-tab-bar-border-color: var(--border-color);
+
+  --ion-color-step-50: #161622;
+  --ion-color-step-100: #1E1E2E;
+  --ion-color-step-150: #252535;
+  --ion-color-step-200: #2a2a3e;
+  --ion-color-step-250: #2f2f47;
+  --ion-color-step-300: #363650;
+
+  --ion-placeholder-color: var(--text-secondary);
+  --ion-color-medium: var(--text-secondary);
+  --ion-color-medium-rgb: 144, 144, 168;
+
+  font-family: 'Inter', sans-serif;
+}
+
+/* Force dark background globally */
+body {
+  background-color: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+}
+
+ion-content {
+  --background: var(--bg-primary);
+}
+
+ion-toolbar {
+  --background: var(--bg-surface);
+  --border-color: var(--border-color);
+  --color: var(--text-primary);
+}
+
+ion-tab-bar {
+  --background: var(--bg-surface);
+  --border-color: var(--border-color);
+  border-top: 1px solid var(--border-color);
+}
+
+ion-tab-button {
+  --color: var(--text-secondary);
+  --color-selected: var(--accent-gold);
+}
+
+ion-card {
+  --background: var(--bg-card);
+  --color: var(--text-primary);
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+  border: 1px solid var(--border-color);
+}
+
+ion-item {
+  --background: var(--bg-card);
+  --color: var(--text-primary);
+  --border-color: var(--border-color);
+}
+
+ion-list {
+  background: transparent;
+  --ion-item-background: var(--bg-card);
+}
+
+ion-segment {
+  --background: var(--bg-surface);
+}
+
+ion-segment-button {
+  --color: var(--text-secondary);
+  --color-checked: var(--accent-gold);
+  --indicator-color: var(--accent-gold);
+  --indicator-height: 3px;
+}
+
+ion-input {
+  --background: var(--bg-card);
+  --color: var(--text-primary);
+  --placeholder-color: var(--text-secondary);
+}
+
+ion-textarea {
+  --background: var(--bg-card);
+  --color: var(--text-primary);
+  --placeholder-color: var(--text-secondary);
+}
+
+ion-chip {
+  --background: var(--bg-card);
+  --color: var(--text-secondary);
+  border: 1px solid var(--border-color);
+}
+
+ion-modal {
+  --background: var(--bg-primary);
+}
+
+ion-popover {
+  --background: var(--bg-surface);
+  --ion-text-color: var(--text-primary);
+}
+
+ion-refresher {
+  --background: var(--bg-primary);
+}
+
+ion-fab-button {
+  --background: var(--accent-gold);
+  --color: #000000;
+}
+
